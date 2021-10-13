@@ -157,22 +157,22 @@ Of the three multi-level models model m6, using random intercepts for subject an
     
 ```{r}
 # scenario x f0mn y, attitude = color
-ff <- fixef(m6)
+# ff <- fixef(m6)
+# 
+# rf <- ranef(m6)
+# rf <- as.data.frame(rf)
+# 
+# politeness$effect_gender <- 0.0
+# politeness[politeness$gender == "F", ]$effect_gender <- ff[1]
+# politeness[politeness$gender == "M", ]$effect_gender <- ff[1] + ff[2]
+# 
+# 
+# politeness$intercept_subject <- left_join(politeness, rf, by = c("subject" = "grp"), copy = TRUE, keep = FALSE)$condval
+# politeness$intercept_scenario <- left_join(politeness, rf, by = c("scenario" = "grp"), copy = TRUE, keep = FALSE)$condval
+# 
+# politeness$predicted <- politeness$effect_gender + politeness$intercept_subject + politeness$intercept_scenario
 
-rf <- ranef(m6)
-rf <- as.data.frame(rf)
-
-politeness$effect_gender <- 0.0
-politeness[politeness$gender == "F", ]$effect_gender <- ff[1]
-politeness[politeness$gender == "M", ]$effect_gender <- ff[1] + ff[2]
-
-
-politeness$intercept_subject <- left_join(politeness, rf, by = c("subject" = "grp"), copy = TRUE, keep = FALSE)$condval
-politeness$intercept_scenario <- left_join(politeness, rf, by = c("scenario" = "grp"), copy = TRUE, keep = FALSE)$condval
-
-politeness$predicted <- politeness$effect_gender + politeness$intercept_subject + politeness$intercept_scenario
-
-
+politness$predicted <- predict(m6)
 
 
 politeness %>% ggplot(aes(scenario, f0mn, color = attitude)) +
@@ -191,15 +191,13 @@ politeness_aggregated <- politeness[!is.na(politeness$f0mn), ] %>% group_by(subj
 politeness_aggregated
 
 m7 <- lm(f0mn ~ gender, data = politeness_aggregated)
-par(mfrow=c(1,2))
-qqnorm(fitted.values(m7))
-qqline(fitted.values(m7))
-qqnorm(fitted.values(m2))
-qqline(fitted.values(m2))
-par(mfrow=c(1,1))
-
-qqnorm(fitted.values(m6))
-qqline(fitted.values(m6), col = "red")
+par(mfrow=c(1,3))
+qqnorm(resid(m7))
+qqline(resid(m7))
+qqnorm(resid(m2))
+qqline(resid(m2))
+qqnorm(resid(m6))
+qqline(resid(m6), col = "red")
 ```
 
   Assessing the QQ-plots of the single-level models it seems that the aggregated model m7's residuals are worse off than those of model m2. The residuals of model m2 are better dispersed along the line - however it still doesn't look fantastic. The QQ-plot of the multilevel model m6 looks better than any of the single level ones, with data points closer to the line and more evenly dispersed on both sides of the line. 
@@ -271,7 +269,8 @@ Furthermore the output of the summary function shows that more variance is expla
 And here's a QQ-plot of our chosen model
 
 ```{r}
-qqnorm(fitted.values(m8))
-qqline(fitted.values(m8), col = "red")
+par(mfrow = c(1,1))
+qqnorm(resid(m8))
+qqline(resid(m8), col = "red")
 ```
 

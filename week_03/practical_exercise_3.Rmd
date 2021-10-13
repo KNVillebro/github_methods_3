@@ -114,7 +114,7 @@ Variable | Description | Class
 # only use staircase trial types.
 samples_staircase <- samples %>% filter(trial.type == "staircase")
 #making a no-pooling model
-m1 <- glm(correct ~ target.contrast + subject,
+m1 <- glm(correct ~ target.contrast*subject,
     data = samples_staircase,
     family = binomial(link = "logit"))
 # We should see an intercept per subject
